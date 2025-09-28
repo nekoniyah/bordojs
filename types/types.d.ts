@@ -4,10 +4,34 @@ export type StepPoint = {
     y: number;
     linkedTo?: string[];
 };
-export type GridBox = { name: string; x: number; y: number; type: string };
-export type Grid = { height: number; width: number; boxes: GridBox[] };
+
+export type GridBox = {
+    name: string;
+    x: number;
+    y: number;
+    type: string;
+};
+
+export type Grid = {
+    height: number;
+    width: number;
+    boxes: GridBox[];
+};
+
+export type BordoEventName = "mousemove" | "click" | "pointClick" | "boxClick";
+
+export type MouseEventData = {
+    percentage: { x: number; y: number };
+    pixel: { x: number; y: number };
+};
+
+export type BordoCallback = (
+    eventName: BordoEventName,
+    data?: MouseEventData | MouseEvent
+) => void;
 
 export type BordoConfig<T extends "grid" | "steps"> = {
+    element: HTMLElement;
     boxSize?: number;
     type: T;
     data: T extends "grid" ? Grid : StepPoint[];
@@ -15,8 +39,8 @@ export type BordoConfig<T extends "grid" | "steps"> = {
 };
 
 export type BordoProps<T extends "grid" | "steps"> = {
-    config: BordoConfig<T>;
-    on?: (eventName: string, ...args: any[]) => void;
+    config: Omit<BordoConfig<T>, "element">;
+    on?: BordoCallback;
     className?: string;
     style?: React.CSSProperties;
     children?: React.ReactNode;
@@ -25,7 +49,7 @@ export type BordoProps<T extends "grid" | "steps"> = {
 
 export type BordoState = {
     points: StepPoint[];
-    grid: Grid;
+    grid: Grid | null;
     mousePercent: { x: number; y: number };
     links: { from: string; to: string }[];
 };
